@@ -1,2 +1,0 @@
-# EKO
-AI assistant
