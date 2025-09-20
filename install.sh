@@ -1,0 +1,1 @@
+pip install -r jarvis-env/requirements.txt

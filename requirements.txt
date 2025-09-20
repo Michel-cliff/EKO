@@ -1,0 +1,30 @@
+# === AI / Speech ===
+openai-whisper
+coqui-tts
+pyttsx3
+mistralai
+transformers
+torch
+torchvision
+torchaudio
+ffmpeg
+
+# === Vision / Gesture Recognition ===
+opencv-python
+mediapipe
+pillow
+numpy
+scipy
+
+# === Backend / Communication ===
+fastapi
+uvicorn
+websockets
+paho-mqtt
+
+# === Utilities ===
+python-dotenv
+rich
+
+# === Optional (wake word detection) ===
+pvporcupine
