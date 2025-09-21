@@ -1,45 +1,40 @@
-
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using MQTTnet;
-using MQTTnet.Client;
 using UnityEngine;
-
-public class MQTTTest : MonoBehaviour
+public class MQTTTester : MonoBehaviour
 {
-    private IMqttClient client;
+    // Reference to the MQTT client script
+    public MQTTClientUnity mqttClient;
 
-    async void Start()
+    // Topic to publish to
+    public string testTopic = "/jarvis/commands";
+
+    void Start()
     {
-        Debug.Log("🚀 Starting MQTT test...");
-
-        var factory = new MqttFactory();
-        client = factory.CreateMqttClient();
-
-        var options = new MqttClientOptionsBuilder()
-            .WithTcpServer("127.0.0.1", 1883)
-            .WithCleanSession()
-            .Build();
-
-        client.ApplicationMessageReceivedAsync += e =>
+        // Ensure we have a reference
+        if (mqttClient == null)
         {
-            Debug.Log($"📩 Received: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
-            return Task.CompletedTask;
-        };
+            // Try to find it in the scene
+            mqttClient = FindObjectOfType<MQTTClientUnity>();
+            if (mqttClient == null)
+            {
+                Debug.LogError("MQTTClientUnity not found in scene!");
+                return;
+            }
+        }
 
-        await client.ConnectAsync(options);
-        Debug.Log("✅ Connected to MQTT broker!");
+        // Simulate a test message after a delay
+        Invoke("SendTestMessage", 2.0f);
+    }
 
-        await client.SubscribeAsync("unity/test");
-        Debug.Log("📡 Subscribed to unity/test");
+    void SendTestMessage()
+    {
+        string testMessage = "{\"action\": \"test\", \"value\": 567}";
+        mqttClient.PublishMessage(testTopic, testMessage);
+        Debug.Log("Test message sent: " + testMessage);
+    }
 
-        // publish test
-        var msg = new MqttApplicationMessageBuilder()
-            .WithTopic("unity/test")
-            .WithPayload("Hello from Unity!")
-            .Build();
-
-        await client.PublishAsync(msg);
+    // Optional: Handle incoming messages (if subscribed)
+    public void OnMQTTMessageReceived(string topic, string message)
+    {
+        Debug.Log($"Received message on {topic}: {message}");
     }
 }

@@ -1,19 +1,21 @@
 # main.py
 import numpy as np
-import sounddevice as sd
-import threading
 import time
 from wakeword import WakeWordDetector
 from speechtotext import transcribe_audio, record_command
 from texttospeech import speak
 from aicore import ask_mistral
 from myqtt_client import UnityMQTTClient
-from queue import Queue
 
 fs = 16000  # sample rate
 
 # Initialize MQTT client for Unity
-mqtt_client = UnityMQTTClient()
+try:
+    mqtt_client = UnityMQTTClient(topic="/jarvis/commands")
+    print("MQTT client initialized")
+except Exception as e:
+    print(f"Failed to initialize MQTT client: {e}")
+    mqtt_client = None
 
 # Override wake-word callback
 def start_interaction(audio_buffer):
@@ -43,14 +45,28 @@ def start_interaction(audio_buffer):
             speak(response)
             
             # Send to Unity
-            mqtt_client.send_command("render", {
-                "text": text,
-                "response": response
-            })
+            if mqtt_client:
+                success = mqtt_client.send_command("render", {
+                    "text": text,
+                    "response": response
+                })
+                if not success:
+                    print("Failed to send message to Unity")
+            else:
+                print("No MQTT client available")
     except KeyboardInterrupt:
         print("Conversation ended.")
+    except Exception as e:
+        print(f"Error in interaction: {e}")
 
 # Initialize wake word detector
-detector = WakeWordDetector(keyword="jarvis")
-detector.on_wake = start_interaction
-detector.listen()
+try:
+    detector = WakeWordDetector(keyword="jarvis")
+    detector.on_wake = start_interaction
+    detector.listen()
+except Exception as e:
+    print(f"Failed to initialize wake word detector: {e}")
+
+# Cleanup on exit
+import atexit
+atexit.register(lambda: mqtt_client.disconnect() if mqtt_client else None)
