@@ -21,8 +21,8 @@ def transcribe_audio(audio_data: np.ndarray) -> str:
   return result["text"]
 
 def record_command(duration=5):
-    """Record voice command for given duration (seconds)."""
-    print("🎤 Listening for your command...")
-    audio = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype="int16")
-    sd.wait()
-    return audio.flatten()
+  """Record voice command for given duration (seconds)."""
+  print("🎤 Listening for your command...")
+  audio = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype="int16")
+  sd.wait()
+  return audio.flatten()
