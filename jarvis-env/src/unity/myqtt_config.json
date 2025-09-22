@@ -1,0 +1,5 @@
+{
+    "brokerAddress": "broker.emqx.io",
+    "brokerPort": 1883,
+    "clientId": "UnityClientJarvis"
+}

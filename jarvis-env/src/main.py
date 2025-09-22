@@ -48,7 +48,7 @@ def start_interaction(audio_buffer):
             if mqtt_client:
                 success = mqtt_client.send_command("render", {
                     "text": text,
-                    "response": response
+                    # "response": response
                 })
                 if not success:
                     print("Failed to send message to Unity")
